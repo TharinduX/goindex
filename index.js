@@ -1,41 +1,41 @@
 const authConfig = {
-  "siteName": "GoIndex", // 网站名称
-  "version": "_4.28", // 程序版本。用户不要手动修改
+  "siteName": "GoIndex", // Website name
+  "version": "_4.28", // Program Version. Users do not modify manually
   /*"client_id": "202264815644.apps.googleusercontent.com",
   "client_secret": "X4Z3ca8xfWDb1Voo-F9a7ZxJ",*/
-  // 【注意】强烈推荐使用自己的 client_id 和 client_secret
+  // [Note] It is strongly recommended to use your own client_id and client_secret
   "client_id": "",
   "client_secret": "",
-  "refresh_token": "", // 授权 token
+  "refresh_token": "", // Authorize token
   /**
-   * 设置要显示的多个云端硬盘；按格式添加多个
-   * [id]: 可以是 团队盘id、子文件夹id、或者"root"（代表个人盘根目录）；
-   * [name]: 显示的名称
-   * [user]: Basic Auth 的用户名
-   * [pass]: Basic Auth 的密码
-   * [protect_file_link]: Basic Auth 是否用于保护文件链接，默认值（不设置时）为 false，即不保护文件链接（方便 直链下载/外部播放 等）
-   * 每个盘的 Basic Auth 都可以单独设置。Basic Auth 默认保护该盘下所有文件夹/子文件夹路径
-   * 【注意】默认不保护文件链接，这样可以方便 直链下载/外部播放;
-   *       如果要保护文件链接，需要将 protect_file_link 设置为 true，此时如果要进行外部播放等操作，需要将 host 替换为 user:pass@host 的 形式
-   * 不需要 Basic Auth 的盘，保持 user 和 pass 同时为空即可。（直接不设置也可以）
-   * 【注意】对于id设置为为子文件夹id的盘将不支持搜索功能（不影响其他盘）。
+   * Set up multiple Drives to display; add multiples by format
+   * [id]: It can be the team disk id, subfolder id, or "root" (representing the root directory of personal disk);
+   * [name]: Display name
+   * [user]: Basic Auth's username
+   * [pass]: Basic Auth Password
+   * [protect_file_link]: Basic Auth Whether it is used to protect the file link, the default value (when not set) is false, that is, the file link is not protected (convenient for straight-chain download / external playback, etc.)
+   * Basic Auth for each disk can be set individually. Basic Auth protects all folders / subfolders in the disk by default
+   * [Note] The file link is not protected by default, which can facilitate straight-chain download / external playback;
+   * If you want to protect the file link, you need to set protect_file_link to true. At this time, if you want to perform external playback and other operations, you need to replace host with user: pass @ host
+   * No Basic Auth disk is required, just keep user and pass empty at the same time. (No need to set it directly)
+   * [Note] For the disk whose id is set to the subfolder id, the search function will not be supported (it does not affect other disks).
    */
   "roots": [
     {
       id: "root",
-      name: "个人盘"
+      name: "Personal disk"
     },
     {
       id: "drive_id",
-      name: "团队盘1",
+      name: "Team plate 1",
       user: 'user1',
       pass: "111",
       protect_file_link: true
     },
     {
       id: "folder_id",
-      name: "文件夹",
-      // 只设置密码、只设置用户名、同时设置用户名密码，都是可以的
+      name: "folder",
+      // It is possible to set only the password, only the user name, and the user name and password at the same time
       user: '',
       pass: "222",
       protect_file_link: false
