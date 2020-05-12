@@ -1,6 +1,4 @@
-#GoIndex  
-
-====  
+# GoIndex
 
 This is a [modified version of goindex](https://github.com/yanzai/goindex) ，In [original goindex](https://github.com/donwa/goindex) Multi-disk support, search, paging loading and other functions have been added.
 
