@@ -3,6 +3,7 @@ document.write('<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/mdui@0.4.3/d
 // markdown支持
 document.write('<script src="//cdn.jsdelivr.net/npm/markdown-it@10.0.0/dist/markdown-it.min.js"></script>');
 document.write('<style>.mdui-appbar .mdui-toolbar{height:56px;font-size:1pc}.mdui-toolbar>*{padding:0 6px;margin:0 2px}.mdui-toolbar>i{opacity:.5}.mdui-toolbar>.mdui-typo-headline{padding:0 1pc 0 0}.mdui-toolbar>i{padding:0}.mdui-toolbar>a:hover,a.active,a.mdui-typo-headline{opacity:1}.mdui-container{max-width:980px}.mdui-list-item{transition:none}.mdui-list>.th{background-color:initial}.mdui-list-item>a{width:100%;line-height:3pc}.mdui-list-item{margin:2px 0;padding:0}.mdui-toolbar>a:last-child{opacity:1}@media screen and (max-width:980px){.mdui-list-item .mdui-text-right{display:none}.mdui-container{width:100%!important;margin:0}.mdui-toolbar>.mdui-typo-headline,.mdui-toolbar>a:last-child,.mdui-toolbar>i:first-child{display:block}}</style>');
+document.write('<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/plyr/3.6.2/plyr.css">');
 // add custome theme and darkmode
 if (UI.dark_mode) {
   document.write(`<style>* {box-sizing: border-box}body{color:rgba(255,255,255,.87);background-color:#333232}.mdui-theme-primary-${UI.main_color} .mdui-color-theme{background-color:#232427!important}</style>`);
@@ -278,11 +279,11 @@ function list(path) {
 
             let $list = $('#list');
             requestListPath(path, {
-                password: prevReqParams['password'],
-                page_token: $list.data('nextPageToken'),
-                // Request next page
-                page_index: $list.data('curPageIndex') + 1
-              },
+              password: prevReqParams['password'],
+              page_token: $list.data('nextPageToken'),
+              // Request next page
+              page_index: $list.data('curPageIndex') + 1
+            },
               successResultCallback,
               // The password is the same as before. No authError
               null
@@ -300,7 +301,7 @@ function list(path) {
   }
 
   // Start requesting data from page 1
-  requestListPath(path, {password: password},
+  requestListPath(path, { password: password },
     successResultCallback,
     function (path) {
       $('#spinner').remove();
@@ -511,11 +512,11 @@ function render_search_result_list() {
 
             let $list = $('#list');
             requestSearch({
-                q: window.MODEL.q,
-                page_token: $list.data('nextPageToken'),
-                // Request next page
-                page_index: $list.data('curPageIndex') + 1
-              },
+              q: window.MODEL.q,
+              page_token: $list.data('nextPageToken'),
+              // Request next page
+              page_index: $list.data('curPageIndex') + 1
+            },
               searchSuccessCallback
             )
           }
@@ -531,7 +532,7 @@ function render_search_result_list() {
   }
 
   // Start requesting data from page 1
-  requestSearch({q: window.MODEL.q}, searchSuccessCallback);
+  requestSearch({ q: window.MODEL.q }, searchSuccessCallback);
 }
 
 /**
@@ -609,7 +610,7 @@ function onSearchResultItemClick(a_ele) {
   mdui.updateSpinners();
 
   // Request a path
-  $.post(`/${cur}:id2path`, {id: a_ele.id}, function (data) {
+  $.post(`/${cur}:id2path`, { id: a_ele.id }, function (data) {
     if (data) {
       dialog.close();
       var href = `/${cur}:${data}${can_preview ? '?a=view' : ''}`;
@@ -629,7 +630,7 @@ function onSearchResultItemClick(a_ele) {
               window.open(href)
             }
           }
-          , {text: 'cancel'}
+          , { text: 'cancel' }
         ]
       });
       return;
@@ -642,7 +643,7 @@ function onSearchResultItemClick(a_ele) {
       modal: true,
       closeOnEsc: true,
       buttons: [
-        {text: 'WTF ???'}
+        { text: 'WTF ???' }
       ]
     });
   })
@@ -788,7 +789,7 @@ function file_video(path) {
   const content = `
 <div class="mdui-container-fluid">
 	<br>
-	<video class="mdui-video-fluid mdui-center" preload controls>
+	<video id ="player" class="mdui-video-fluid mdui-center" preload controls>
 	  <source src="${url}" type="video/mp4">
 	</video>
 	<br>${playBtn}
@@ -803,7 +804,11 @@ function file_video(path) {
 	</div>
 </div>
 <a href="${url}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
-	`;
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/plyr/3.6.2/plyr.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.3/js/mdui.min.js"></script>
+
+`;
   $('#content').html(content);
   $('#copy-link').on('click', () => {
     copyToClipboard(url);
@@ -845,7 +850,7 @@ function file_pdf(path) {
 	<object data="${inline_url}" type="application/pdf" name="${file_name}" style="width:100%;height:94vh;"><embed src="${inline_url}" type="application/pdf"/></object>
     <a href="${url}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
 	`;
-  $('#content').removeClass('mdui-container').addClass('mdui-container-fluid').css({padding: 0}).html(content);
+  $('#content').removeClass('mdui-container').addClass('mdui-container-fluid').css({ padding: 0 }).html(content);
 }
 
 // image display
