@@ -1,9 +1,10 @@
 // Load the necessary static in the head
 document.write('<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/mdui@0.4.3/dist/css/mdui.min.css">');
+document.write('<link rel="stylesheet" href="https://cdn.plyr.io/3.6.2/plyr.css"/>');
 // markdown支持
 document.write('<script src="//cdn.jsdelivr.net/npm/markdown-it@10.0.0/dist/markdown-it.min.js"></script>');
 document.write('<style>.mdui-appbar .mdui-toolbar{height:56px;font-size:1pc}.mdui-toolbar>*{padding:0 6px;margin:0 2px}.mdui-toolbar>i{opacity:.5}.mdui-toolbar>.mdui-typo-headline{padding:0 1pc 0 0}.mdui-toolbar>i{padding:0}.mdui-toolbar>a:hover,a.active,a.mdui-typo-headline{opacity:1}.mdui-container{max-width:980px}.mdui-list-item{transition:none}.mdui-list>.th{background-color:initial}.mdui-list-item>a{width:100%;line-height:3pc}.mdui-list-item{margin:2px 0;padding:0}.mdui-toolbar>a:last-child{opacity:1}@media screen and (max-width:980px){.mdui-list-item .mdui-text-right{display:none}.mdui-container{width:100%!important;margin:0}.mdui-toolbar>.mdui-typo-headline,.mdui-toolbar>a:last-child,.mdui-toolbar>i:first-child{display:block}}</style>');
-document.write('<script src="//cdn.jsdelivr.net/gh/5MayRain/goIndex-theme-nexmoe@1.1.5/js/DPlayer.min.js"></script>');
+document.write('<script src="https://cdn.plyr.io/3.6.2/plyr.js"></script>');
 // add custome theme and darkmode
 if (UI.dark_mode) {
   document.write(`<style>* {box-sizing: border-box}body{color:rgba(255,255,255,.87);background-color:#333232}.mdui-theme-primary-${UI.main_color} .mdui-color-theme{background-color:#232427!important}</style>`);
@@ -789,7 +790,7 @@ function file_video(path) {
   const content = `
 <div class="mdui-container-fluid">
 	<br>
-	<div class="mdui-video-fluid mdui-center" id="dplayer"></div>
+	<div class="mdui-video-fluid mdui-center" id="player"></div>
 	<br>${playBtn}
 	<!-- Fixed label -->
 	<div class="mdui-textfield">
@@ -810,29 +811,64 @@ function file_video(path) {
     mdui.snackbar('Copied to clipboard!');
   });
 
-  const dp = new DPlayer({
-    container: document.getElementById("dplayer"),
-    loop: true,
-    lang: 'zh-cn',
-    screenshot: true,
-    preload: 'auto',
-    video: {
-      quality: [
-        {
-          url: url,
-          type: "normal"
-        }
-      ],
-      autoplay: true,
-      defaultQuality: 0
-    }
-  });
-}
+  const plyr = new Plyr({
+    container: document.getElementById('player'),
+    enabled: true,
+    control: [
+      'play-large',
+      'play',
+      'progress',
+      'current-time',
+      'mute',
+      'volume',
+      'captions',
+      'settings',
+      'pip',
+      'airplay',
+      'fullscreen'
+    ],
 
-// File display Audio |mp3|flac|m4a|wav|ogg|
-function file_audio(path) {
-  var url = window.location.origin + path;
-  var content = `
+    settings: [
+      'captions',
+      'quality',
+      'speed',
+      'loop'
+    ],
+
+    captions: {
+      active: false,
+      language: 'auto',
+      update: false
+    },
+
+    quality: {
+      default: 576,
+      options:
+        [4320,
+          2880,
+          2160,
+          1440,
+          1080,
+          720,
+          576,
+          480,
+          360,
+          240]
+    },
+
+    sources: [
+      {
+        src: url,
+        type: 'video/mp4',
+      }
+    ],
+
+  });
+
+  // File display Audio |mp3|flac|m4a|wav|ogg|
+  function file_audio(path) {
+    var url = window.location.origin + path;
+    var content = `
 <div class="mdui-container-fluid">
 	<br>
 	<audio class="mdui-center" preload controls>
@@ -851,51 +887,51 @@ function file_audio(path) {
 </div>
 <a href="${url}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
 	`;
-  $('#content').html(content);
-}
+    $('#content').html(content);
+  }
 
-// Document display pdf  pdf
-function file_pdf(path) {
-  const url = window.location.origin + path;
-  const inline_url = `${url}?inline=true`
-  const file_name = decodeURI(path.slice(path.lastIndexOf('/') + 1, path.length))
-  var content = `
+  // Document display pdf  pdf
+  function file_pdf(path) {
+    const url = window.location.origin + path;
+    const inline_url = `${url}?inline=true`
+    const file_name = decodeURI(path.slice(path.lastIndexOf('/') + 1, path.length))
+    var content = `
 	<object data="${inline_url}" type="application/pdf" name="${file_name}" style="width:100%;height:94vh;"><embed src="${inline_url}" type="application/pdf"/></object>
     <a href="${url}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
 	`;
-  $('#content').removeClass('mdui-container').addClass('mdui-container-fluid').css({ padding: 0 }).html(content);
-}
+    $('#content').removeClass('mdui-container').addClass('mdui-container-fluid').css({ padding: 0 }).html(content);
+  }
 
-// image display
-function file_image(path) {
-  var url = window.location.origin + path;
-  // console.log(window.location.pathname)
-  const currentPathname = window.location.pathname
-  const lastIndex = currentPathname.lastIndexOf('/');
-  const fatherPathname = currentPathname.slice(0, lastIndex + 1);
-  // console.log(fatherPathname)
-  let target_children = localStorage.getItem(fatherPathname);
-  // console.log(`fatherPathname: ${fatherPathname}`);
-  // console.log(target_children)
-  let targetText = '';
-  if (target_children) {
-    try {
-      target_children = JSON.parse(target_children);
-      if (!Array.isArray(target_children)) {
-        target_children = []
+  // image display
+  function file_image(path) {
+    var url = window.location.origin + path;
+    // console.log(window.location.pathname)
+    const currentPathname = window.location.pathname
+    const lastIndex = currentPathname.lastIndexOf('/');
+    const fatherPathname = currentPathname.slice(0, lastIndex + 1);
+    // console.log(fatherPathname)
+    let target_children = localStorage.getItem(fatherPathname);
+    // console.log(`fatherPathname: ${fatherPathname}`);
+    // console.log(target_children)
+    let targetText = '';
+    if (target_children) {
+      try {
+        target_children = JSON.parse(target_children);
+        if (!Array.isArray(target_children)) {
+          target_children = []
+        }
+      } catch (e) {
+        console.error(e);
+        target_children = [];
       }
-    } catch (e) {
-      console.error(e);
-      target_children = [];
-    }
-    if (target_children.length > 0 && target_children.includes(path)) {
-      let len = target_children.length;
-      let cur = target_children.indexOf(path);
-      // console.log(`len = ${len}`)
-      // console.log(`cur = ${cur}`)
-      let prev_child = (cur - 1 > -1) ? target_children[cur - 1] : null;
-      let next_child = (cur + 1 < len) ? target_children[cur + 1] : null;
-      targetText = `
+      if (target_children.length > 0 && target_children.includes(path)) {
+        let len = target_children.length;
+        let cur = target_children.indexOf(path);
+        // console.log(`len = ${len}`)
+        // console.log(`cur = ${cur}`)
+        let prev_child = (cur - 1 > -1) ? target_children[cur - 1] : null;
+        let next_child = (cur + 1 < len) ? target_children[cur + 1] : null;
+        targetText = `
             <div class="mdui-container">
                 <div class="mdui-row-xs-2 mdui-m-b-1">
                     <div class="mdui-col">
@@ -907,13 +943,13 @@ function file_image(path) {
                 </div>
             </div>
             `;
+      }
+      // <div id="btns" >
+      //             ${targetObj[path].prev ? `<span id="leftBtn" data-direction="left" data-filepath="${targetObj[path].prev}"><i class="mdui-icon material-icons">&#xe5c4;</i><span style="margin-left: 10px;">Prev</span></span>` : `<span style="cursor: not-allowed;color: rgba(0,0,0,0.2);margin-bottom:20px;"><i class="mdui-icon material-icons">&#xe5c4;</i><span style="margin-left: 10px;">Prev</span></span>`}
+      //             ${targetObj[path].next ? `<span id="rightBtn" data-direction="right"  data-filepath="${targetObj[path].next}"><i class="mdui-icon material-icons">&#xe5c8;</i><span style="margin-left: 10px;">Next</span></span>` : `<span style="cursor: not-allowed;color: rgba(0,0,0,0.2);"><i class="mdui-icon material-icons">&#xe5c4;</i><span style="margin-left: 10px;">Prev</span></span>`}
+      // </div>
     }
-    // <div id="btns" >
-    //             ${targetObj[path].prev ? `<span id="leftBtn" data-direction="left" data-filepath="${targetObj[path].prev}"><i class="mdui-icon material-icons">&#xe5c4;</i><span style="margin-left: 10px;">Prev</span></span>` : `<span style="cursor: not-allowed;color: rgba(0,0,0,0.2);margin-bottom:20px;"><i class="mdui-icon material-icons">&#xe5c4;</i><span style="margin-left: 10px;">Prev</span></span>`}
-    //             ${targetObj[path].next ? `<span id="rightBtn" data-direction="right"  data-filepath="${targetObj[path].next}"><i class="mdui-icon material-icons">&#xe5c8;</i><span style="margin-left: 10px;">Next</span></span>` : `<span style="cursor: not-allowed;color: rgba(0,0,0,0.2);"><i class="mdui-icon material-icons">&#xe5c4;</i><span style="margin-left: 10px;">Prev</span></span>`}
-    // </div>
-  }
-  var content = `
+    var content = `
 <div class="mdui-container-fluid">
     <br>
     <div id="imgWrap">
@@ -937,114 +973,114 @@ function file_image(path) {
 </div>
 <a href="${url}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
     `;
-  // my code
-  $('#content').html(content);
-  $('#leftBtn, #rightBtn').click((e) => {
-    let target = $(e.target);
-    if (['I', 'SPAN'].includes(e.target.nodeName)) {
-      target = $(e.target).parent();
+    // my code
+    $('#content').html(content);
+    $('#leftBtn, #rightBtn').click((e) => {
+      let target = $(e.target);
+      if (['I', 'SPAN'].includes(e.target.nodeName)) {
+        target = $(e.target).parent();
+      }
+      const filepath = target.attr('data-filepath');
+      const direction = target.attr('data-direction');
+      //console.log(`${direction}Turn page ${filepath}`);
+      file(filepath)
+    });
+  }
+
+
+  // Time conversion
+  function utc2beijing(utc_datetime) {
+    // Convert to normal time format year-month-day hour: minute: second
+    var T_pos = utc_datetime.indexOf('T');
+    var Z_pos = utc_datetime.indexOf('Z');
+    var year_month_day = utc_datetime.substr(0, T_pos);
+    var hour_minute_second = utc_datetime.substr(T_pos + 1, Z_pos - T_pos - 1);
+    var new_datetime = year_month_day + " " + hour_minute_second; // 2017-03-31 08:02:06
+
+    // Processing becomes timestamp
+    timestamp = new Date(Date.parse(new_datetime));
+    timestamp = timestamp.getTime();
+    timestamp = timestamp / 1000;
+
+    // 8 hours increase, Beijing time is eight more time zones than UTC time
+    var unixtimestamp = timestamp + 5.5 * 60 * 60;
+
+    // Timestamp to time
+    var unixtimestamp = new Date(unixtimestamp * 1000);
+    var year = 1900 + unixtimestamp.getYear();
+    var month = "0" + (unixtimestamp.getMonth() + 1);
+    var date = "0" + unixtimestamp.getDate();
+    var hour = "0" + unixtimestamp.getHours();
+    var minute = "0" + unixtimestamp.getMinutes();
+    var second = "0" + unixtimestamp.getSeconds();
+    return year + "-" + month.substring(month.length - 2, month.length) + "-" + date.substring(date.length - 2, date.length)
+      + " " + hour.substring(hour.length - 2, hour.length) + ":"
+      + minute.substring(minute.length - 2, minute.length) + ":"
+      + second.substring(second.length - 2, second.length);
+  }
+
+  // bytes adaptive conversion to KB, MB, GB
+  function formatFileSize(bytes) {
+    if (bytes >= 1000000000) {
+      bytes = (bytes / 1000000000).toFixed(2) + ' GB';
+    } else if (bytes >= 1000000) {
+      bytes = (bytes / 1000000).toFixed(2) + ' MB';
+    } else if (bytes >= 1000) {
+      bytes = (bytes / 1000).toFixed(2) + ' KB';
+    } else if (bytes > 1) {
+      bytes = bytes + ' bytes';
+    } else if (bytes == 1) {
+      bytes = bytes + ' byte';
+    } else {
+      bytes = '';
     }
-    const filepath = target.attr('data-filepath');
-    const direction = target.attr('data-direction');
-    //console.log(`${direction}Turn page ${filepath}`);
-    file(filepath)
+    return bytes;
+  }
+
+  String.prototype.trim = function (char) {
+    if (char) {
+      return this.replace(new RegExp('^\\' + char + '+|\\' + char + '+$', 'g'), '');
+    }
+    return this.replace(/^\s+|\s+$/g, '');
+  };
+
+
+  // README.md HEAD.md support
+  function markdown(el, data) {
+    if (window.md == undefined) {
+      //$.getScript('https://cdn.jsdelivr.net/npm/markdown-it@10.0.0/dist/markdown-it.min.js',function(){
+      window.md = window.markdownit();
+      markdown(el, data);
+      //});
+    } else {
+      var html = md.render(data);
+      $(el).show().html(html);
+    }
+  }
+
+  // Listen for fallback events
+  window.onpopstate = function () {
+    var path = window.location.pathname;
+    render(path);
+  }
+
+
+  $(function () {
+    init();
+    var path = window.location.pathname;
+    /*$("body").on("click", '.folder', function () {
+        var url = $(this).attr('href');
+        history.pushState(null, null, url);
+        render(url);
+        return false;
+    });
+   
+    $("body").on("click", '.view', function () {
+        var url = $(this).attr('href');
+        history.pushState(null, null, url);
+        render(url);
+        return false;
+    });*/
+
+    render(path);
   });
-}
-
-
-// Time conversion
-function utc2beijing(utc_datetime) {
-  // Convert to normal time format year-month-day hour: minute: second
-  var T_pos = utc_datetime.indexOf('T');
-  var Z_pos = utc_datetime.indexOf('Z');
-  var year_month_day = utc_datetime.substr(0, T_pos);
-  var hour_minute_second = utc_datetime.substr(T_pos + 1, Z_pos - T_pos - 1);
-  var new_datetime = year_month_day + " " + hour_minute_second; // 2017-03-31 08:02:06
-
-  // Processing becomes timestamp
-  timestamp = new Date(Date.parse(new_datetime));
-  timestamp = timestamp.getTime();
-  timestamp = timestamp / 1000;
-
-  // 8 hours increase, Beijing time is eight more time zones than UTC time
-  var unixtimestamp = timestamp + 5.5 * 60 * 60;
-
-  // Timestamp to time
-  var unixtimestamp = new Date(unixtimestamp * 1000);
-  var year = 1900 + unixtimestamp.getYear();
-  var month = "0" + (unixtimestamp.getMonth() + 1);
-  var date = "0" + unixtimestamp.getDate();
-  var hour = "0" + unixtimestamp.getHours();
-  var minute = "0" + unixtimestamp.getMinutes();
-  var second = "0" + unixtimestamp.getSeconds();
-  return year + "-" + month.substring(month.length - 2, month.length) + "-" + date.substring(date.length - 2, date.length)
-    + " " + hour.substring(hour.length - 2, hour.length) + ":"
-    + minute.substring(minute.length - 2, minute.length) + ":"
-    + second.substring(second.length - 2, second.length);
-}
-
-// bytes adaptive conversion to KB, MB, GB
-function formatFileSize(bytes) {
-  if (bytes >= 1000000000) {
-    bytes = (bytes / 1000000000).toFixed(2) + ' GB';
-  } else if (bytes >= 1000000) {
-    bytes = (bytes / 1000000).toFixed(2) + ' MB';
-  } else if (bytes >= 1000) {
-    bytes = (bytes / 1000).toFixed(2) + ' KB';
-  } else if (bytes > 1) {
-    bytes = bytes + ' bytes';
-  } else if (bytes == 1) {
-    bytes = bytes + ' byte';
-  } else {
-    bytes = '';
-  }
-  return bytes;
-}
-
-String.prototype.trim = function (char) {
-  if (char) {
-    return this.replace(new RegExp('^\\' + char + '+|\\' + char + '+$', 'g'), '');
-  }
-  return this.replace(/^\s+|\s+$/g, '');
-};
-
-
-// README.md HEAD.md support
-function markdown(el, data) {
-  if (window.md == undefined) {
-    //$.getScript('https://cdn.jsdelivr.net/npm/markdown-it@10.0.0/dist/markdown-it.min.js',function(){
-    window.md = window.markdownit();
-    markdown(el, data);
-    //});
-  } else {
-    var html = md.render(data);
-    $(el).show().html(html);
-  }
-}
-
-// Listen for fallback events
-window.onpopstate = function () {
-  var path = window.location.pathname;
-  render(path);
-}
-
-
-$(function () {
-  init();
-  var path = window.location.pathname;
-  /*$("body").on("click", '.folder', function () {
-      var url = $(this).attr('href');
-      history.pushState(null, null, url);
-      render(url);
-      return false;
-  });
-
-  $("body").on("click", '.view', function () {
-      var url = $(this).attr('href');
-      history.pushState(null, null, url);
-      render(url);
-      return false;
-  });*/
-
-  render(path);
-});
