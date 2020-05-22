@@ -788,10 +788,12 @@ function file_video(path) {
 
   const content = `
 <div class="mdui-container-fluid">
-	<br>
-	<video id ="player" class="mdui-video-fluid mdui-center" preload controls>
-	  <source src="${url}" type="video/mp4">
-	</video>
+  <br>
+   <div class="mdui-video-fluid mdui-center">
+   <video id ="player">
+   <source src="${url}" type="video/mp4">
+   </video>
+   <div>
 	<br>${playBtn}
 	<!-- Fixed label -->
 	<div class="mdui-textfield">
@@ -806,7 +808,6 @@ function file_video(path) {
 <a href="${url}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
 
 <script src="https://cdn.plyr.io/3.6.2/plyr.polyfilled.js"></script>
-
 `;
   $('#content').html(content);
   const player = new Plyr('#player');
