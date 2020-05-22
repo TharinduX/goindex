@@ -813,7 +813,7 @@ function file_video(path) {
   const dp = new DPlayer({
     container: document.getElementById("dplayer"),
     loop: true,
-    lang: 'zh-cn',
+    lang: 'en',
     screenshot: true,
     preload: 'auto',
     video: {
