@@ -3,7 +3,7 @@ document.write('<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/mdui@0.4.3/d
 // markdown支持
 document.write('<script src="//cdn.jsdelivr.net/npm/markdown-it@10.0.0/dist/markdown-it.min.js"></script>');
 document.write('<style>.mdui-appbar .mdui-toolbar{height:56px;font-size:1pc}.mdui-toolbar>*{padding:0 6px;margin:0 2px}.mdui-toolbar>i{opacity:.5}.mdui-toolbar>.mdui-typo-headline{padding:0 1pc 0 0}.mdui-toolbar>i{padding:0}.mdui-toolbar>a:hover,a.active,a.mdui-typo-headline{opacity:1}.mdui-container{max-width:980px}.mdui-list-item{transition:none}.mdui-list>.th{background-color:initial}.mdui-list-item>a{width:100%;line-height:3pc}.mdui-list-item{margin:2px 0;padding:0}.mdui-toolbar>a:last-child{opacity:1}@media screen and (max-width:980px){.mdui-list-item .mdui-text-right{display:none}.mdui-container{width:100%!important;margin:0}.mdui-toolbar>.mdui-typo-headline,.mdui-toolbar>a:last-child,.mdui-toolbar>i:first-child{display:block}}</style>');
-document.write('<link rel="stylesheet" href="https://cdn.plyr.io/3.6.2/plyr.css" />');
+document.write('<script src="//cdn.jsdelivr.net/gh/5MayRain/goIndex-theme-nexmoe@1.1.5/js/DPlayer.min.js"></script>');
 // add custome theme and darkmode
 if (UI.dark_mode) {
   document.write(`<style>* {box-sizing: border-box}body{color:rgba(255,255,255,.87);background-color:#333232}.mdui-theme-primary-${UI.main_color} .mdui-color-theme{background-color:#232427!important}</style>`);
@@ -789,9 +789,7 @@ function file_video(path) {
   const content = `
 <div class="mdui-container-fluid">
 	<br>
-	<video id ="player" class="mdui-video-fluid mdui-center" preload controls>
-	  <source src="${url}" type="video/mp4">
-	</video>
+	<div class="mdui-video-fluid mdui-center" id="dplayer"></div>
 	<br>${playBtn}
 	<!-- Fixed label -->
 	<div class="mdui-textfield">
@@ -805,17 +803,29 @@ function file_video(path) {
 </div>
 <a href="${url}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
 
-<script src="https://cdn.plyr.io/3.6.2/plyr.polyfilled.js"></script>
-
 `;
   $('#content').html(content);
-  const player = new Plyr('#player');
-  window.player = player;
-
-
   $('#copy-link').on('click', () => {
     copyToClipboard(url);
     mdui.snackbar('Copied to clipboard!');
+  });
+
+  const dp = new DPlayer({
+    container: document.getElementById("dplayer"),
+    loop: true,
+    lang: 'zh-cn',
+    screenshot: true,
+    preload: 'auto',
+    video: {
+      quality: [
+        {
+          url: url,
+          type: "normal"
+        }
+      ],
+      autoplay: true,
+      defaultQuality: 0
+    }
   });
 }
 
