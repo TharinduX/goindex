@@ -810,6 +810,9 @@ function file_video(path) {
 
 `;
   $('#content').html(content);
+  const player = new Plyr('#player');
+  window.player = player;
+  
   $('#copy-link').on('click', () => {
     copyToClipboard(url);
     mdui.snackbar('Copied to clipboard!');
