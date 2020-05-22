@@ -804,15 +804,11 @@ function file_video(path) {
 	</div>
 </div>
 <a href="${url}" class="mdui-fab mdui-fab-fixed mdui-ripple mdui-color-theme-accent"><i class="mdui-icon material-icons">file_download</i></a>
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/plyr/3.6.2/plyr.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.3/js/mdui.min.js"></script>
-
 `;
   $('#content').html(content);
   const player = new Plyr('#player');
   window.player = player;
-  
+
   $('#copy-link').on('click', () => {
     copyToClipboard(url);
     mdui.snackbar('Copied to clipboard!');
@@ -843,6 +839,9 @@ function file_audio(path) {
 	`;
   $('#content').html(content);
 }
+
+document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/plyr/3.6.2/plyr.min.js"></script>');
+document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/mdui/0.4.3/js/mdui.min.js"></script>');
 
 // Document display pdf  pdf
 function file_pdf(path) {
