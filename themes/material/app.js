@@ -789,7 +789,7 @@ function file_video(path) {
   const content = `
 <div class="mdui-container-fluid">
 	<br>
-	<video class="mdui-video-fluid mdui-center" preload controls>
+	<video id ="player" class="mdui-video-fluid mdui-center" preload controls>
 	  <source src="${url}" type="video/mp4">
 	</video>
 	<br>${playBtn}
@@ -808,7 +808,7 @@ function file_video(path) {
 `;
 
   $('#content').html(content);
-  const player = new Plyr('video', { captions: { active: true } });
+  const player = new Plyr('#player', { captions: { active: true } });
   window.player = player;
 
   $('#copy-link').on('click', () => {
